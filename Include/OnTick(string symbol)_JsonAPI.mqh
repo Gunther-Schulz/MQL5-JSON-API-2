@@ -83,11 +83,9 @@ int LoadSymbol(string symbol)
    ArrayResize(_handle_,_symbols_total_);    // resize array for handles of "spys"
    ArrayInitialize(_handle_,INVALID_HANDLE); // initalizae array for handles of "spys"
 
-    Print(_symbols_total_, symbol);
    _symbols_total_=ArraySize(tickSymbols);     
    for(int i=0;i<_symbols_total_;i++)
       if(!LoadAgent(i, symbol)) return(1);      
-     Print(_symbols_total_, symbol);
    
    //--- Execute OnInit function of Expert Advisor
    //_OnInit();      
@@ -110,7 +108,7 @@ int UnloadAllSymbols()
 
    _symbols_total_=ArraySize(tickSymbols);     
    for(int i=0;i<_symbols_total_;i++)
-      if(!DeLoadAgent(i, tickSymbols[i])) return(1);      
+      if(!DeLoadAgent(i, tickSymbols[i])) return(false);      
      
    
    //--- Execute OnInit function of Expert Advisor
@@ -130,11 +128,9 @@ void OnTick()
      {
       for(int i=0;i<_symbols_total_;i++)
         {
-         Print("a");
          string __symbol__=tickSymbols[i];
          if(MathAbs(GlobalVariableGet(__symbol__+"_flag")-2)<0.1) 
            {
-            Print("b");
             GlobalVariableSet(__symbol__+"_flag",1);
             OnTick(__symbol__);
            }
