@@ -9,30 +9,31 @@ Working in production on Debian 10 / Wine 4.
 An issue was found because of REP/REQ socket. Architecture changes are in development.
 
 ## Table of Contents
-* [About the Project](#about-the-project)
-* [Installation](#installation)
-* [Documentation](#documentation)
-* [Usage](#usage)
-* [Live data and streaming events](#live-data-and-streaming-events)
-* [Error handling](#error-handling)
-* [License](#license)
+
+- [About the Project](#about-the-project)
+- [Installation](#installation)
+- [Documentation](#documentation)
+- [Usage](#usage)
+- [Live data and streaming events](#live-data-and-streaming-events)
+- [Error handling](#error-handling)
+- [License](#license)
 
 ## About the Project
 
 This project was developed to work as a server for the Backtrader Python trading framework. It is based on ZeroMQ sockets and uses JSON format to communicate. But now it has grown to the independent project. You can use it with any programming language that has [ZeroMQ binding](http://zeromq.org/bindings:_start).
 
-
 Backtrader Python client is located here: [Python Backtrader - Metaquotes MQL5 ](https://github.com/khramkov/Backtrader-MQL5-API)
 
 In development:
-* Devitation
-* Stop limit orders
+
+- Devitation
+- Stop limit orders
 
 ## Installation
 
 1. Install ZeroMQ for MQL5 [https://github.com/dingmaotu/mql-zmq](https://github.com/dingmaotu/mql-zmq)
 2. Put `include/Json.mqh` from this repo to your MetaEditor `include` directoty.
-3. Download and compile `experts/JsonAPI.mq5` script. 
+3. Download and compile `experts/JsonAPI.mq5` script.
 4. Check if Metatrader 5 automatic trading is allowed.
 5. Attach the script to a chart in Metatrader 5.
 6. Allow DLL import in dialog window.
@@ -70,33 +71,35 @@ The idea is to send requests via `System socket` and recieve results/errors via 
 	"comment": null
 }
 ```
+
 Check out the available combinations of `action` and `actionType`:
 
-action     | actionType           | Description                |
------------|----------------------|----------------------------|
-CONFIG     | null            	    | Set script configuration   |
-ACCOUNT    | null                 | Get account settings       |
-BALANCE    | null                 | Get current balance        |
-POSITIONS  | null                 | Get current open positions |
-ORDERS     | null                 | Get current open orders    |
-HISTORY    | DATA                 | Get data history           |
-HISTORY    | TRADES               | Get trades history         |
-TRADE      | ORDER_TYPE_BUY       | Buy market                 |
-TRADE      | ORDER_TYPE_SELL      | Sell market                |
-TRADE      | ORDER_TYPE_BUY_LIMIT | Buy limit                  |
-TRADE      | ORDER_TYPE_SELL_LIMIT| Sell limit                 |
-TRADE      | ORDER_TYPE_BUY_STOP  | Buy stop                   |
-TRADE      | ORDER_TYPE_SELL_STOP | Sell stop                  |
-TRADE      | POSITION_MODIFY      | Position modify            |
-TRADE      | POSITION_PARTIAL     | Position close partial     |
-TRADE      | POSITION_CLOSE_ID    | Position close by id       |
-TRADE      | POSITION_CLOSE_SYMBOL| Positions close by symbol  |
-TRADE      | ORDER_MODIFY         | Order modify               |
-TRADE      | ORDER_CANCEL         | Order cancel               |
+| action    | actionType            | Description                  |
+| --------- | --------------------- | ---------------------------- |
+| CONFIG    | null                  | Set script configuration     |
+| ACCOUNT   | null                  | Get account settings         |
+| BALANCE   | null                  | Get current balance          |
+| POSITIONS | null                  | Get current open positions   |
+| ORDERS    | null                  | Get current open orders      |
+| HISTORY   | DATA                  | Get data history             |
+| HISTORY   | TRADES                | Get trades history           |
+| HISTORY   | WRITE                 | Downlaod history data as CSV |
+| TRADE     | ORDER_TYPE_BUY        | Buy market                   |
+| TRADE     | ORDER_TYPE_SELL       | Sell market                  |
+| TRADE     | ORDER_TYPE_BUY_LIMIT  | Buy limit                    |
+| TRADE     | ORDER_TYPE_SELL_LIMIT | Sell limit                   |
+| TRADE     | ORDER_TYPE_BUY_STOP   | Buy stop                     |
+| TRADE     | ORDER_TYPE_SELL_STOP  | Sell stop                    |
+| TRADE     | POSITION_MODIFY       | Position modify              |
+| TRADE     | POSITION_PARTIAL      | Position close partial       |
+| TRADE     | POSITION_CLOSE_ID     | Position close by id         |
+| TRADE     | POSITION_CLOSE_SYMBOL | Positions close by symbol    |
+| TRADE     | ORDER_MODIFY          | Order modify                 |
+| TRADE     | ORDER_CANCEL          | Order cancel                 |
 
 Python 3 API class example:
 
-``` python
+```python
 import zmq
 
 class MTraderAPI:
@@ -203,23 +206,25 @@ class MTraderAPI:
         # return server reply
         return self._pull_reply()
 ```
+
 ## Usage
+
 All examples will be on Python 3. Lets create an instance of MetaTrader API class:
 
-``` python
+```python
 api = MTraderAPI()
 ```
 
-First of all we should configure the script `symbol` and `timeframe`. Live data stream will be configured to the seme params.
+First of all we should configure the script `symbol` and `timeframe`. Live data stream will be configured to the same params.
 
-``` python
+```python
 rep = api.construct_and_send(action="CONFIG", symbol="EURUSD", chartTF="M5")
 print(rep)
 ```
 
 Get information about the trading account.
 
-``` python
+```python
 rep = api.construct_and_send(action="ACCOUNT")
 print(rep)
 ```
@@ -231,7 +236,7 @@ There are some issues:
 - MetaTrader keeps historical data in cache. But when you make a request for the first time, MetaTrader downloads the data from a broker. This operation can exceed `Data socket` timeout. It depends on your broker. Second request will be handeled quickly.
 - It takes 6-7 seconds to process `50000` M1 candles. It was tested on Windows 10 in Parallels Desktop container with 4 cores and 4GB RAM. So if you need more data there are three ways to handle it. 1) Increase `Data socket` timeout. 2) You can load data partially using `fromDate` and `toDate`. 3) You can use more powerfull hardware.
 
-``` python
+```python
 rep = api.construct_and_send(action="HISTORY", actionType="DATA", symbol="EURUSD", chartTF="M5", fromDate=1555555555)
 print(rep)
 ```
@@ -244,31 +249,33 @@ History data reply example:
 
 Buy market order.
 
-``` python
+```python
 rep = api.construct_and_send(action="TRADE", actionType="ORDER_TYPE_BUY", symbol="EURUSD", "volume"=0.1, "stoploss"=1.1, "takeprofit"=1.3)
 print(rep)
 ```
 
 Sell limit order. Remember to switch SL/TP depending on BUY/SELL, or you will get `invalid stops` error.
 
-- BUY:  	SL < price < TP
-- SELL: 	SL > price > TP
+- BUY: SL < price < TP
+- SELL: SL > price > TP
 
-``` python
+```python
 rep = api.construct_and_send(action="TRADE", actionType="ORDER_TYPE_SELL_LIMIT", symbol="EURUSD", "volume"=0.1, "price"=1.2, "stoploss"=1.3, "takeprofit"=1.1)
 print(rep)
 ```
+
 All pending orders are set to `Good till cancel` by default. If you want to set an expiration date, pass the date in timestamp format to `expiration` param.
 
-``` python
+```python
 rep = api.construct_and_send(action="TRADE", actionType="ORDER_TYPE_SELL_LIMIT", symbol="EURUSD", "volume"=0.1, "price"=1.2, "expiration"=1560782460)
 print(rep)
 ```
+
 ## Live data and streaming events
 
 Event handler example for `Live socket` and `Data socket`.
- 
-``` python
+
+```python
 import zmq
 import threading
 
@@ -308,7 +315,6 @@ while True:
     pass
 ```
 
-
 There are only two variants of `Live socket` data. When everything is ok, the script sends data on candle close:
 
 ```
@@ -323,54 +329,57 @@ If the terminal has lost connection to the market:
 
 When the terminal reconnects to the market, it sends the last closed candle again. So you should update your historical data. Make the `action="HISTORY"` request with `fromDate` equal to your last candle timestamp before disconnect.
 
-`OnTradeTransaction` function is called when a trade transaction event occurs. `Streaming socket` sends `TRADE_TRANSACTION_REQUEST` data every time it happens. Try to create and modify orders in the MQL5 terminal manually and check the expert logging tab for better understanding. Also see [MQL5 docs](https://www.mql5.com/en/docs/event_handlers/ontradetransaction). 
+`OnTradeTransaction` function is called when a trade transaction event occurs. `Streaming socket` sends `TRADE_TRANSACTION_REQUEST` data every time it happens. Try to create and modify orders in the MQL5 terminal manually and check the expert logging tab for better understanding. Also see [MQL5 docs](https://www.mql5.com/en/docs/event_handlers/ontradetransaction).
 
 `TRADE_TRANSACTION_REQUEST` request data:
 
 ```
 {
-	'action': 'TRADE_ACTION_DEAL', 
-	'order': 501700843, 
-	'symbol': 'EURUSD', 
-	'volume': 0.1, 
-	'price': 1.12181, 
-	'stoplimit': 0.0, 
-	'sl': 1.1, 
-	'tp': 1.13, 
-	'deviation': 10, 
-	'type': 'ORDER_TYPE_BUY', 
-	'type_filling': 'ORDER_FILLING_FOK', 
-	'type_time': 'ORDER_TIME_GTC', 
-	'expiration': 0, 
-	'comment': None, 
-	'position': 0, 
+	'action': 'TRADE_ACTION_DEAL',
+	'order': 501700843,
+	'symbol': 'EURUSD',
+	'volume': 0.1,
+	'price': 1.12181,
+	'stoplimit': 0.0,
+	'sl': 1.1,
+	'tp': 1.13,
+	'deviation': 10,
+	'type': 'ORDER_TYPE_BUY',
+	'type_filling': 'ORDER_FILLING_FOK',
+	'type_time': 'ORDER_TIME_GTC',
+	'expiration': 0,
+	'comment': None,
+	'position': 0,
 	'position_by': 0
 }
 ```
+
 `TRADE_TRANSACTION_REQUEST` result data:
 
 ```
 {
-	'retcode': 10009, 
-	'result': 'TRADE_RETCODE_DONE', 
-	'deal': 501700843, 
-	'order': 501700843, 
-	'volume': 0.1, 
-	'price': 1.12181, 
-	'comment': None, 
-	'request_id': 8, 
+	'retcode': 10009,
+	'result': 'TRADE_RETCODE_DONE',
+	'deal': 501700843,
+	'order': 501700843,
+	'volume': 0.1,
+	'price': 1.12181,
+	'comment': None,
+	'request_id': 8,
 	'retcode_external': 0
 }
 ```
 
 ## Error handling
-First of all, when you send a command via `System socket`, you should always receive back `"OK"` message via `System socket`. It means that your command was received and deserialized. 
 
-All data that come through `Data socket` have an `error` param. This param will have `true` key if somethng goes wrong. Also, there will be `description` and `function` params. They will hold information about error and the name of the function with error. 
+First of all, when you send a command via `System socket`, you should always receive back `"OK"` message via `System socket`. It means that your command was received and deserialized.
+
+All data that come through `Data socket` have an `error` param. This param will have `true` key if somethng goes wrong. Also, there will be `description` and `function` params. They will hold information about error and the name of the function with error.
 
 This information also applies to the trade commannds. See [MQL5 docs](https://www.mql5.com/en/docs/constants/errorswarnings/enum_trade_return_codes) for possible server answers.
 
 ## License
+
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See `LICENSE` for more information.
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See `LICENSE` for more information.
