@@ -96,36 +96,37 @@ int OnInit()
    ArraySetAsSeries(alive,true);
 
 
-   SetIndexBuffer(0,B0,INDICATOR_DATA);
-   SetIndexBuffer(1,B1,INDICATOR_DATA);
-   SetIndexBuffer(2,B2,INDICATOR_DATA);
-   SetIndexBuffer(3,B3,INDICATOR_DATA);
-   SetIndexBuffer(4,B4,INDICATOR_DATA);
-   SetIndexBuffer(5,B5,INDICATOR_DATA);
-   SetIndexBuffer(6,B6,INDICATOR_DATA);
-   SetIndexBuffer(7,B7,INDICATOR_DATA);
-   SetIndexBuffer(8,B8,INDICATOR_DATA);
-   SetIndexBuffer(9,B9,INDICATOR_DATA);
-   SetIndexBuffer(10,B10,INDICATOR_DATA);
-   SetIndexBuffer(11,B11,INDICATOR_DATA);
-   SetIndexBuffer(12,B12,INDICATOR_DATA);
-   SetIndexBuffer(13,B13,INDICATOR_DATA);
-   SetIndexBuffer(14,B14,INDICATOR_DATA);
-   SetIndexBuffer(15,B15,INDICATOR_DATA);
-   SetIndexBuffer(16,B16,INDICATOR_DATA);
-   SetIndexBuffer(17,B17,INDICATOR_DATA);
-   SetIndexBuffer(18,B18,INDICATOR_DATA);
-   SetIndexBuffer(19,B19,INDICATOR_DATA);
-   SetIndexBuffer(20,B20,INDICATOR_DATA);
-   SetIndexBuffer(21,B21,INDICATOR_DATA);
-   SetIndexBuffer(22,B22,INDICATOR_DATA);
-   SetIndexBuffer(23,B23,INDICATOR_DATA);
-   SetIndexBuffer(24,B24,INDICATOR_DATA);
-   SetIndexBuffer(25,B25,INDICATOR_DATA);
-   SetIndexBuffer(26,B26,INDICATOR_DATA);
-   SetIndexBuffer(27,B27,INDICATOR_DATA);
-   SetIndexBuffer(28,B28,INDICATOR_DATA);
-   SetIndexBuffer(29,B29,INDICATOR_DATA);
+   SetIndexBuffer(0,B0,INDICATOR_CALCULATIONS);
+   SetIndexBuffer(1,B1,INDICATOR_CALCULATIONS);
+   SetIndexBuffer(2,B2,INDICATOR_CALCULATIONS);
+   SetIndexBuffer(3,B3,INDICATOR_CALCULATIONS);
+   SetIndexBuffer(4,B4,INDICATOR_CALCULATIONS);
+   SetIndexBuffer(5,B5,INDICATOR_CALCULATIONS);
+   SetIndexBuffer(6,B6,INDICATOR_CALCULATIONS);
+   SetIndexBuffer(7,B7,INDICATOR_CALCULATIONS);
+   SetIndexBuffer(8,B8,INDICATOR_CALCULATIONS);
+   SetIndexBuffer(9,B9,INDICATOR_CALCULATIONS);
+   SetIndexBuffer(10,B10,INDICATOR_CALCULATIONS);
+   SetIndexBuffer(11,B11,INDICATOR_CALCULATIONS);
+   SetIndexBuffer(12,B12,INDICATOR_CALCULATIONS);
+   SetIndexBuffer(13,B13,INDICATOR_CALCULATIONS);
+   SetIndexBuffer(14,B14,INDICATOR_CALCULATIONS);
+   SetIndexBuffer(15,B15,INDICATOR_CALCULATIONS);
+   SetIndexBuffer(16,B16,INDICATOR_CALCULATIONS);
+   SetIndexBuffer(17,B17,INDICATOR_CALCULATIONS);
+   SetIndexBuffer(18,B18,INDICATOR_CALCULATIONS);
+   SetIndexBuffer(19,B19,INDICATOR_CALCULATIONS);
+   SetIndexBuffer(20,B20,INDICATOR_CALCULATIONS);
+   SetIndexBuffer(21,B21,INDICATOR_CALCULATIONS);
+   SetIndexBuffer(22,B22,INDICATOR_CALCULATIONS);
+   SetIndexBuffer(23,B23,INDICATOR_CALCULATIONS);
+   SetIndexBuffer(24,B24,INDICATOR_CALCULATIONS);
+   SetIndexBuffer(25,B25,INDICATOR_CALCULATIONS);
+   SetIndexBuffer(26,B26,INDICATOR_CALCULATIONS);
+   SetIndexBuffer(27,B27,INDICATOR_CALCULATIONS);
+   SetIndexBuffer(28,B28,INDICATOR_CALCULATIONS);
+   SetIndexBuffer(29,B29,INDICATOR_CALCULATIONS);
+   SetIndexBuffer(29,B29,INDICATOR_CALCULATIONS);
    SetIndexBuffer(30,alive,INDICATOR_CALCULATIONS); // If the buffer index changes, the line starting with "CopyBuffer(chartWindowIndicators[i].indicatorHandle," in JsonAPI.mq5 has to be updated
 
 
@@ -228,65 +229,155 @@ void SubscriptionHandler(ZmqMsg &chartMsg)
         {
          int bufferIdx = message["indicatorBufferId"].ToInt();
          if(bufferIdx == 0)
+           {
             WriteToBuffer(message, B0);
+            SetIndexBuffer(0,B0,INDICATOR_DATA);
+           }
          if(bufferIdx == 1)
+           {
             WriteToBuffer(message, B1);
+            SetIndexBuffer(1,B1,INDICATOR_DATA);
+           }
          if(bufferIdx == 2)
+           {
             WriteToBuffer(message, B2);
+            SetIndexBuffer(2,B2,INDICATOR_DATA);
+           }
          if(bufferIdx == 3)
+           {
             WriteToBuffer(message, B3);
+            SetIndexBuffer(3,B3,INDICATOR_DATA);
+           }
          if(bufferIdx == 4)
+           {
             WriteToBuffer(message, B4);
+            SetIndexBuffer(4,B4,INDICATOR_DATA);
+           }
          if(bufferIdx == 5)
+           {
             WriteToBuffer(message, B5);
+            SetIndexBuffer(5,B5,INDICATOR_DATA);
+           }
          if(bufferIdx == 6)
+           {
             WriteToBuffer(message, B6);
+            SetIndexBuffer(6,B6,INDICATOR_DATA);
+           }
          if(bufferIdx == 7)
+           {
             WriteToBuffer(message, B7);
+            SetIndexBuffer(7,B7,INDICATOR_DATA);
+           }
          if(bufferIdx == 8)
+           {
             WriteToBuffer(message, B8);
+            SetIndexBuffer(8,B8,INDICATOR_DATA);
+           }
          if(bufferIdx == 9)
+           {
             WriteToBuffer(message, B9);
+            SetIndexBuffer(9,B9,INDICATOR_DATA);
+           }
          if(bufferIdx == 10)
+           {
             WriteToBuffer(message, B10);
+            SetIndexBuffer(10,B10,INDICATOR_DATA);
+           }
          if(bufferIdx == 11)
+           {
             WriteToBuffer(message, B11);
+            SetIndexBuffer(11,B11,INDICATOR_DATA);
+           }
          if(bufferIdx == 12)
+           {
             WriteToBuffer(message, B12);
+            SetIndexBuffer(12,B12,INDICATOR_DATA);
+           }
          if(bufferIdx == 13)
+           {
             WriteToBuffer(message, B13);
+            SetIndexBuffer(13,B13,INDICATOR_DATA);
+           }
          if(bufferIdx == 14)
+           {
             WriteToBuffer(message, B14);
+            SetIndexBuffer(14,B14,INDICATOR_DATA);
+           }
          if(bufferIdx == 15)
+           {
             WriteToBuffer(message, B15);
+            SetIndexBuffer(15,B15,INDICATOR_DATA);
+           }
          if(bufferIdx == 16)
+           {
             WriteToBuffer(message, B16);
+            SetIndexBuffer(16,B16,INDICATOR_DATA);
+           }
          if(bufferIdx == 17)
+           {
             WriteToBuffer(message, B17);
+            SetIndexBuffer(17,B17,INDICATOR_DATA);
+           }
          if(bufferIdx == 18)
+           {
             WriteToBuffer(message, B18);
+            SetIndexBuffer(18,B18,INDICATOR_DATA);
+           }
          if(bufferIdx == 19)
+           {
             WriteToBuffer(message, B19);
+            SetIndexBuffer(19,B19,INDICATOR_DATA);
+           }
          if(bufferIdx == 20)
+           {
             WriteToBuffer(message, B20);
+            SetIndexBuffer(20,B20,INDICATOR_DATA);
+           }
          if(bufferIdx == 21)
+           {
             WriteToBuffer(message, B21);
+            SetIndexBuffer(21,B21,INDICATOR_DATA);
+           }
          if(bufferIdx == 22)
+           {
             WriteToBuffer(message, B22);
+            SetIndexBuffer(22,B22,INDICATOR_DATA);
+           }
          if(bufferIdx == 23)
+           {
             WriteToBuffer(message, B23);
+            SetIndexBuffer(23,B23,INDICATOR_DATA);
+           }
          if(bufferIdx == 24)
+           {
             WriteToBuffer(message, B24);
+            SetIndexBuffer(24,B24,INDICATOR_DATA);
+           }
          if(bufferIdx == 25)
+           {
             WriteToBuffer(message, B25);
+            SetIndexBuffer(25,B25,INDICATOR_DATA);
+           }
          if(bufferIdx == 26)
+           {
             WriteToBuffer(message, B26);
+            SetIndexBuffer(26,B26,INDICATOR_DATA);
+           }
          if(bufferIdx == 27)
+           {
             WriteToBuffer(message, B27);
+            SetIndexBuffer(27,B27,INDICATOR_DATA);
+           }
          if(bufferIdx == 28)
+           {
             WriteToBuffer(message, B28);
+            SetIndexBuffer(28,B28,INDICATOR_DATA);
+           }
          if(bufferIdx == 29)
+           {
             WriteToBuffer(message, B29);
+            SetIndexBuffer(29,B29,INDICATOR_DATA);
+           }
         }
       else
          if(message["action"]=="PLOT" && message["actionType"]=="ADDBUFFER")
@@ -328,6 +419,11 @@ void WriteToBuffer(CJAVal &message, double &buffer[])
 
    int bufferSize = ArraySize(buffer);
 
+   for(int i=0; i<bufferSize; i++)
+     {
+      buffer[i] = EMPTY_VALUE;
+     }
+
    int messageDataSize = message["data"].Size();
 // TODO check if this is working as expected. Seems to
    if(first==false)
@@ -350,6 +446,8 @@ void WriteToBuffer(CJAVal &message, double &buffer[])
          //buffer[i+1] = message["data"][messageDataSize-1-i].ToDbl();
          buffer[i+1] = message["data"][messageDataSize-1-i].ToDbl();
         }
+      //if(i == messageDataSize-1)
+      //   buffer[i+1] = EMPTY_VALUE;
      }
 // Set the most recent plotted value to nothing, as we do not have any data for yet unformed candles
    buffer[0] = EMPTY_VALUE;
