@@ -21,22 +21,18 @@ Context context("MQL5 JSON API");
 Socket chartSubscriptionSocket(context,ZMQ_SUB);
 
 //--- input parameters
-#property indicator_buffers 21
-#property indicator_plots   20
-#property indicator_label1  "JsonAPI"
-#property indicator_type1   DRAW_NONE
-#property indicator_type2   DRAW_NONE
-#property indicator_type3   DRAW_NONE
-//#property indicator_color3  CLR_NONE
-#property indicator_type4   DRAW_NONE
-#property indicator_type5  DRAW_NONE
+#property indicator_buffers 31
+#property indicator_plots   30
 
 input string            IndicatorId="";
-input string            ShortName="JsonAPI";
+input string            ShortName="JsonAPIIndicator";
 
 //--- indicator settings
-double                  B0[], B1[], B2[], B3[], B4[], B5[], B6[], B7[], B8[], B9[], B10[], B11[], B12[], B13[], B14[], B15[], B16[], B17[], B18[], B19[], alive[];
-bool                    debug = true;
+double                  B0[], B1[], B2[], B3[], B4[], B5[], B6[], B7[], B8[], B9[], B10[];
+double                  B11[], B12[], B13[], B14[], B15[], B16[], B17[], B18[], B19[], B20[];
+double                  B21[], B22[], B23[], B24[], B25[], B26[], B27[], B28[], B29[];
+double                  alive[];
+bool                    debug = false;
 bool                    first = false;
 int                     activeBufferCount = 0;
 
@@ -84,7 +80,18 @@ int OnInit()
    ArraySetAsSeries(B17,true);
    ArraySetAsSeries(B18,true);
    ArraySetAsSeries(B19,true);
+   ArraySetAsSeries(B20,true);
+   ArraySetAsSeries(B21,true);
+   ArraySetAsSeries(B22,true);
+   ArraySetAsSeries(B23,true);
+   ArraySetAsSeries(B24,true);
+   ArraySetAsSeries(B25,true);
+   ArraySetAsSeries(B26,true);
+   ArraySetAsSeries(B27,true);
+   ArraySetAsSeries(B28,true);
+   ArraySetAsSeries(B29,true);
    ArraySetAsSeries(alive,true);
+
 
    SetIndexBuffer(0,B0,INDICATOR_DATA);
    SetIndexBuffer(1,B1,INDICATOR_DATA);
@@ -106,7 +113,17 @@ int OnInit()
    SetIndexBuffer(17,B17,INDICATOR_DATA);
    SetIndexBuffer(18,B18,INDICATOR_DATA);
    SetIndexBuffer(19,B19,INDICATOR_DATA);
-   SetIndexBuffer(20,alive,INDICATOR_CALCULATIONS); // If the buffer index changes, the line starting with "CopyBuffer(chartWindowIndicators[i].indicatorHandle," in JsonAPI.mq5 has to be updated
+   SetIndexBuffer(20,B20,INDICATOR_DATA);
+   SetIndexBuffer(21,B21,INDICATOR_DATA);
+   SetIndexBuffer(22,B22,INDICATOR_DATA);
+   SetIndexBuffer(23,B23,INDICATOR_DATA);
+   SetIndexBuffer(24,B24,INDICATOR_DATA);
+   SetIndexBuffer(25,B25,INDICATOR_DATA);
+   SetIndexBuffer(26,B26,INDICATOR_DATA);
+   SetIndexBuffer(27,B27,INDICATOR_DATA);
+   SetIndexBuffer(28,B28,INDICATOR_DATA);
+   SetIndexBuffer(29,B29,INDICATOR_DATA);
+   SetIndexBuffer(30,alive,INDICATOR_CALCULATIONS); // If the buffer index changes, the line starting with "CopyBuffer(chartWindowIndicators[i].indicatorHandle," in JsonAPI.mq5 has to be updated
 
 
 //---
@@ -142,8 +159,8 @@ int OnCalculate(const int rates_total,
                 const long &volume[],
                 const int &spread[])
   {
-// While a new candle is forming, set the current value to be empty
 
+// While a new candle is forming, set the current value to be empty
    if(rates_total>prev_calculated)
      {
       B0[0] = EMPTY_VALUE;
@@ -166,6 +183,16 @@ int OnCalculate(const int rates_total,
       B17[0] = EMPTY_VALUE;
       B18[0] = EMPTY_VALUE;
       B19[0] = EMPTY_VALUE;
+      B20[0] = EMPTY_VALUE;
+      B21[0] = EMPTY_VALUE;
+      B22[0] = EMPTY_VALUE;
+      B23[0] = EMPTY_VALUE;
+      B24[0] = EMPTY_VALUE;
+      B25[0] = EMPTY_VALUE;
+      B26[0] = EMPTY_VALUE;
+      B27[0] = EMPTY_VALUE;
+      B28[0] = EMPTY_VALUE;
+      B29[0] = EMPTY_VALUE;
      }
    if(first==false)
       alive[0] = 1;
@@ -237,6 +264,26 @@ void SubscriptionHandler(ZmqMsg &chartMsg)
             WriteToBuffer(message, B18);
          if(bufferIdx == 19)
             WriteToBuffer(message, B19);
+         if(bufferIdx == 20)
+            WriteToBuffer(message, B20);
+         if(bufferIdx == 21)
+            WriteToBuffer(message, B21);
+         if(bufferIdx == 22)
+            WriteToBuffer(message, B22);
+         if(bufferIdx == 23)
+            WriteToBuffer(message, B23);
+         if(bufferIdx == 24)
+            WriteToBuffer(message, B24);
+         if(bufferIdx == 25)
+            WriteToBuffer(message, B25);
+         if(bufferIdx == 26)
+            WriteToBuffer(message, B26);
+         if(bufferIdx == 27)
+            WriteToBuffer(message, B27);
+         if(bufferIdx == 28)
+            WriteToBuffer(message, B28);
+         if(bufferIdx == 29)
+            WriteToBuffer(message, B29);
         }
       else
          if(message["action"]=="PLOT" && message["actionType"]=="ADDBUFFER")

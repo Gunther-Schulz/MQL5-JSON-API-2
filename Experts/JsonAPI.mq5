@@ -102,7 +102,7 @@ ChartWindowIndicator chartWindowIndicators[];
 int chartWindowIndicatorCount = 0;
 
 // Refresh chart window interval for JsonAPIIndicator
-int chartWindowTimerInterval = 100; // Cycles of the globally set EventSetMillisecondTimer interval
+int chartWindowTimerInterval = 1; // Cycles of the globally set EventSetMillisecondTimer interval
 int chartWindowTimerCounter = 0; // Keeps track of the current cycle
 
 // Error handling
@@ -349,6 +349,7 @@ int GetChartIndicatorIdxByChartIndicatorId(string indicatorId)
 void StreamPriceData()
   {
 // If liveStream == true, push last candle to liveSocket.
+
    if(liveStream)
      {
       CJAVal last;
@@ -364,6 +365,7 @@ void StreamPriceData()
             ENUM_TIMEFRAMES period = GetTimeframe(chartTF);
 
             datetime thisBar = 0;
+            float price;
             MqlTick tick;
             MqlRates rates[1];
             int spread[1];
@@ -392,7 +394,6 @@ void StreamPriceData()
                     }
                   else
                     {
-                     ;
                      Data[0] = (long) rates[0].time;
                      Data[1] = (double) rates[0].open;
                      Data[2] = (double) rates[0].high;
@@ -401,7 +402,6 @@ void StreamPriceData()
                      Data[5] = (double) rates[0].tick_volume;
                      Data[6] = (int) spread[0];
                     }
-
                   last["status"] = (string) "CONNECTED";
                   last["symbol"] = (string) symbol;
                   last["timeframe"] = (string) chartTF;
@@ -470,6 +470,7 @@ void OnTimer()
       chartIndicatorDataSocket.send(chartMsg,true);
      }
 
+// TODO: It looks like it is not necessary to throttle this.
 // Trigger the indicator JsonAPIIndicator to check for new Messages
    if(chartWindowTimerCounter >= chartWindowTimerInterval)
      {
@@ -838,12 +839,12 @@ void AddChartIndicator(CJAVal &dataObject)
    string chartIdStr=dataObject["chartId"].ToStr();
    string chartIndicatorId=dataObject["indicatorChartId"].ToStr();
    int chartIndicatorSubWindow=dataObject["chartIndicatorSubWindow"].ToInt();
-//string shortname = dataObject["style"]["shortname"].ToStr();
+   string shortName = dataObject["shortName"].ToStr();
 
    int chartIdx = GetChartWindowIdxByChartWindowId(chartIdStr);
    long ChartId = chartWindows[chartIdx].id;
 
-   double chartIndicatorHandle = iCustom(ChartSymbol(ChartId),ChartPeriod(ChartId),"JsonAPIIndicator",chartIndicatorId,"JsonAPI"); //linelabel,colorstyle,linetype,linestyle,linewidth);
+   double chartIndicatorHandle = iCustom(ChartSymbol(ChartId),ChartPeriod(ChartId),"JsonAPIIndicator",chartIndicatorId,shortName); //linelabel,colorstyle,linetype,linestyle,linewidth);
 
    if(ChartIndicatorAdd(ChartId, chartIndicatorSubWindow, chartIndicatorHandle))
      {
