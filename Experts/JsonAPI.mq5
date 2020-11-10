@@ -101,10 +101,6 @@ struct ChartWindowIndicator
 ChartWindowIndicator chartWindowIndicators[];
 int chartWindowIndicatorCount = 0;
 
-// Refresh chart window interval for JsonAPIIndicator
-int chartWindowTimerInterval = 1; // Cycles of the globally set EventSetMillisecondTimer interval
-int chartWindowTimerCounter = 0; // Keeps track of the current cycle
-
 // Error handling
 ControlErrors mControl;
 
@@ -465,25 +461,19 @@ void OnTimer()
       // Ensure that all indicators have finished intitailisation
       for(int i=0; i<ArraySize(chartWindowIndicators); i++)
         {
-         CopyBuffer(chartWindowIndicators[i].indicatorHandle, 7, 0, 1, values); // '7' is the number of the 'alive' indicator buffer
+         //CopyBuffer(chartWindowIndicators[i].indicatorHandle, 7, 0, 1, values); // '7' is the number of the 'alive' indicator buffer
+         // Wait for CopyBuffer to return. Ensures that indicator has been initialized
+         CopyBuffer(chartWindowIndicators[i].indicatorHandle, 0, 0, 1, values); // '7' is the number of the 'alive' indicator buffer
         }
       chartIndicatorDataSocket.send(chartMsg,true);
      }
 
-// TODO: It looks like it is not necessary to throttle this.
 // Trigger the indicator JsonAPIIndicator to check for new Messages
-   if(chartWindowTimerCounter >= chartWindowTimerInterval)
+   for(int i=0; i<ArraySize(chartWindows); i++)
      {
-      for(int i=0; i<ArraySize(chartWindows); i++)
-        {
-         long ChartId = chartWindows[i].id;
-         EventChartCustom(ChartId, 222, 222, 222.0);
-        }
-      chartWindowTimerCounter = 0;
+      long chartId = chartWindows[i].id;
+      EventChartCustom(chartId, 222, 222, 222.0);
      }
-   else
-      chartWindowTimerCounter++;
-
   }
 
 //+------------------------------------------------------------------+
@@ -823,6 +813,7 @@ void OpenChart(CJAVal &dataObject)
    CJAVal message;
    message["error"]=(bool) false;
    message["chartId"] = (string) chartId;
+   message["mtChartId"] = (string) chartWindows[idx].id;
 
    string t=message.Serialize();
    if(debug)
@@ -837,16 +828,16 @@ void AddChartIndicator(CJAVal &dataObject)
   {
 
    string chartIdStr=dataObject["chartId"].ToStr();
-   string chartIndicatorId=dataObject["indicatorChartId"].ToStr();
+   string chartIndicatorId=dataObject["chartIndicatorId"].ToStr();
    int chartIndicatorSubWindow=dataObject["chartIndicatorSubWindow"].ToInt();
    string shortName = dataObject["shortName"].ToStr();
 
    int chartIdx = GetChartWindowIdxByChartWindowId(chartIdStr);
-   long ChartId = chartWindows[chartIdx].id;
+   long chartId = chartWindows[chartIdx].id;
 
-   double chartIndicatorHandle = iCustom(ChartSymbol(ChartId),ChartPeriod(ChartId),"JsonAPIIndicator",chartIndicatorId,shortName); //linelabel,colorstyle,linetype,linestyle,linewidth);
+   double chartIndicatorHandle = iCustom(ChartSymbol(chartId),ChartPeriod(chartId),"JsonAPIIndicator",chartIndicatorId,shortName); //linelabel,colorstyle,linetype,linestyle,linewidth);
 
-   if(ChartIndicatorAdd(ChartId, chartIndicatorSubWindow, chartIndicatorHandle))
+   if(ChartIndicatorAdd(chartId, chartIndicatorSubWindow, chartIndicatorHandle))
      {
       chartWindowIndicatorCount++;
       ArrayResize(chartWindowIndicators,chartWindowIndicatorCount);
@@ -1528,54 +1519,54 @@ ENUM_TIMEFRAMES GetTimeframe(string chartTF)
   {
 
    ENUM_TIMEFRAMES tf;
+   tf=NULL;
 
    if(chartTF=="TICK")
       tf=PERIOD_CURRENT;
-   else
-      if(chartTF=="M1")
-         tf=PERIOD_M1;
-      else
-         if(chartTF=="M5")
-            tf=PERIOD_M5;
-         else
-            if(chartTF=="M15")
-               tf=PERIOD_M15;
-            else
-               if(chartTF=="M30")
-                  tf=PERIOD_M30;
-               else
-                  if(chartTF=="H1")
-                     tf=PERIOD_H1;
-                  else
-                     if(chartTF=="H2")
-                        tf=PERIOD_H2;
-                     else
-                        if(chartTF=="H3")
-                           tf=PERIOD_H3;
-                        else
-                           if(chartTF=="H4")
-                              tf=PERIOD_H4;
-                           else
-                              if(chartTF=="H6")
-                                 tf=PERIOD_H6;
-                              else
-                                 if(chartTF=="H8")
-                                    tf=PERIOD_H8;
-                                 else
-                                    if(chartTF=="H12")
-                                       tf=PERIOD_H12;
-                                    else
-                                       if(chartTF=="D1")
-                                          tf=PERIOD_D1;
-                                       else
-                                          if(chartTF=="W1")
-                                             tf=PERIOD_W1;
-                                          else
-                                             if(chartTF=="MN1")
-                                                tf=PERIOD_MN1;
-                                             //error will be raised in config function
-                                             else
-                                                tf=NULL;
+
+   if(chartTF=="M1")
+      tf=PERIOD_M1;
+
+   if(chartTF=="M5")
+      tf=PERIOD_M5;
+
+   if(chartTF=="M15")
+      tf=PERIOD_M15;
+
+   if(chartTF=="M30")
+      tf=PERIOD_M30;
+
+   if(chartTF=="H1")
+      tf=PERIOD_H1;
+
+   if(chartTF=="H2")
+      tf=PERIOD_H2;
+
+   if(chartTF=="H3")
+      tf=PERIOD_H3;
+
+   if(chartTF=="H4")
+      tf=PERIOD_H4;
+
+   if(chartTF=="H6")
+      tf=PERIOD_H6;
+
+   if(chartTF=="H8")
+      tf=PERIOD_H8;
+
+   if(chartTF=="H12")
+      tf=PERIOD_H12;
+
+   if(chartTF=="D1")
+      tf=PERIOD_D1;
+
+   if(chartTF=="W1")
+      tf=PERIOD_W1;
+
+   if(chartTF=="MN1")
+      tf=PERIOD_MN1;
+
+//if tf == NULL an error will be raised in config function
    return(tf);
   }
 
