@@ -31,10 +31,10 @@ input string            ShortName="JsonAPIIndicator";
 double                  B0[], B1[], B2[], B3[], B4[], B5[], B6[], B7[], B8[], B9[], B10[];
 double                  B11[], B12[], B13[], B14[], B15[], B16[], B17[], B18[], B19[], B20[];
 double                  B21[], B22[], B23[], B24[], B25[], B26[], B27[], B28[], B29[];
-double                  alive[];
 bool                    debug = false;
-bool                    first = false;
 int                     activeBufferCount = 0;
+long                    mtChartId = 0;
+bool                    setFormingCandleBlank = true;
 
 //+------------------------------------------------------------------+
 //| Custom indicator initialization function                         |
@@ -57,7 +57,6 @@ int OnInit()
      {
       Print("Accepting Chart Indicator data on port ", CHART_SUB_PORT);
      }
-
 
 //--- indicator buffers mapping;
    ArraySetAsSeries(B0,true);
@@ -90,8 +89,6 @@ int OnInit()
    ArraySetAsSeries(B27,true);
    ArraySetAsSeries(B28,true);
    ArraySetAsSeries(B29,true);
-   ArraySetAsSeries(alive,true);
-
 
    SetIndexBuffer(0,B0,INDICATOR_CALCULATIONS);
    SetIndexBuffer(1,B1,INDICATOR_CALCULATIONS);
@@ -123,14 +120,19 @@ int OnInit()
    SetIndexBuffer(27,B27,INDICATOR_CALCULATIONS);
    SetIndexBuffer(28,B28,INDICATOR_CALCULATIONS);
    SetIndexBuffer(29,B29,INDICATOR_CALCULATIONS);
-   SetIndexBuffer(29,B29,INDICATOR_CALCULATIONS);
-   SetIndexBuffer(30,alive,INDICATOR_CALCULATIONS); // If the buffer index changes, the line starting with "CopyBuffer(chartWindowIndicators[i].indicatorHandle," in JsonAPI.mq5 has to be updated
-
 
 //---
    IndicatorSetString(INDICATOR_SHORTNAME,ShortName);
 
    return(INIT_SUCCEEDED);
+  }
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+void OnDeinit(const int reason)
+  {
+// Print("INDI DEINIT ",reason);
   }
 
 
@@ -162,7 +164,9 @@ int OnCalculate(const int rates_total,
   {
 
 // While a new candle is forming, set the current value to be empty
-   if(rates_total>prev_calculated)
+
+
+   if(rates_total>prev_calculated && setFormingCandleBlank)
      {
       B0[0] = EMPTY_VALUE;
       B1[0] = EMPTY_VALUE;
@@ -195,9 +199,6 @@ int OnCalculate(const int rates_total,
       B28[0] = EMPTY_VALUE;
       B29[0] = EMPTY_VALUE;
      }
-   if(first==false)
-      alive[0] = 1;
-// ChartRedraw(0);
 
 //--- return value of prev_calculated for next call
    return(rates_total);
@@ -219,7 +220,7 @@ void SubscriptionHandler(ZmqMsg &chartMsg)
       Alert("Deserialization Error");
       ExpertRemove();
      }
-   if(message["indicatorChartId"]==IndicatorId)
+   if(message["chartIndicatorId"]==IndicatorId)
      {
 
       if(message["action"]=="PLOT" && message["actionType"]=="DATA")
@@ -375,6 +376,7 @@ void SubscriptionHandler(ZmqMsg &chartMsg)
             WriteToBuffer(message, B29);
             SetIndexBuffer(29,B29,INDICATOR_DATA);
            }
+         ChartRedraw(mtChartId);
         }
       else
          if(message["action"]=="PLOT" && message["actionType"]=="ADDBUFFER")
@@ -384,27 +386,162 @@ void SubscriptionHandler(ZmqMsg &chartMsg)
             string linetypeStr = message["style"]["linetype"].ToStr();
             string linestyleStr = message["style"]["linestyle"].ToStr();
             int linewidth = message["style"]["linewidth"].ToInt();
+            setFormingCandleBlank = message["style"]["blankforming"].ToBool();
 
             color colorstyle = StringToColor(colorstyleStr);
             int linetype = StringToEnumInt(linetypeStr);
             int linestyle = StringToEnumInt(linestyleStr);
 
-            /*
-            //if (aa == false) {
-            Print("SETBUFF ActCount  ",activeBufferCount);
-            if (activeBufferCount == 0) {SetIndexBuffer(0,B1,INDICATOR_DATA);} // Two semicolons ar required! No idea why. Seems to be a timing problem, better to keep it in init()
-
-            if (activeBufferCount == 1) {SetIndexBuffer(1,B2,INDICATOR_DATA);;}
-            if (activeBufferCount == 2) {SetIndexBuffer(2,B3,INDICATOR_DATA);;}
-            if (activeBufferCount == 3) {SetIndexBuffer(3,B4,INDICATOR_DATA);;}
-            if (activeBufferCount == 4) {SetIndexBuffer(4,B5,INDICATOR_DATA);;}
-
-            //aa = true;}
-            */
-
             SetStyle(activeBufferCount, linelabel, colorstyle, linetype, linestyle, linewidth);
             activeBufferCount = activeBufferCount + 1;
+
+            ClearBuffer(activeBufferCount-1);
            }
+     }
+  }
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+void Clear(double &buffer[])
+  {
+   int bufferSize = ArraySize(buffer);
+   for(int i=0; i<bufferSize; i++)
+     {
+      buffer[i] = EMPTY_VALUE;
+     }
+  }
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+void ClearBuffer(int bufferIdx)
+  {
+   switch(bufferIdx)
+     {
+      case  0:
+        {
+         Clear(B0);
+        }
+      case  1:
+        {
+         Clear(B1);
+        }
+      case  2:
+        {
+         Clear(B2);
+        }
+      case  3:
+        {
+         Clear(B3);
+        }
+      case  4:
+        {
+         Clear(B4);
+        }
+      case  5:
+        {
+         Clear(B5);
+        }
+      case  6:
+        {
+         Clear(B6);
+        }
+      case  7:
+        {
+         Clear(B7);
+        }
+      case  8:
+        {
+         Clear(B8);
+        }
+      case  9:
+        {
+         Clear(B9);
+        }
+      case  10:
+        {
+         Clear(B10);
+        }
+      case  11:
+        {
+         Clear(B11);
+        }
+      case  12:
+        {
+         Clear(B12);
+        }
+      case  13:
+        {
+         Clear(B13);
+        }
+      case  14:
+        {
+         Clear(B14);
+        }
+      case  15:
+        {
+         Clear(B15);
+        }
+      case  16:
+        {
+         Clear(B16);
+        }
+      case  17:
+        {
+         Clear(B17);
+        }
+      case  18:
+        {
+         Clear(B18);
+        }
+      case  19:
+        {
+         Clear(B19);
+        }
+      case  20:
+        {
+         Clear(B20);
+        }
+      case  21:
+        {
+         Clear(B21);
+        }
+      case  22:
+        {
+         Clear(B22);
+        }
+      case  23:
+        {
+         Clear(B23);
+        }
+      case  24:
+        {
+         Clear(B24);
+        }
+      case  25:
+        {
+         Clear(B25);
+        }
+      case  26:
+        {
+         Clear(B26);
+        }
+      case  27:
+        {
+         Clear(B27);
+        }
+      case  28:
+        {
+         Clear(B28);
+        }
+      case  29:
+        {
+         Clear(B29);
+        }
+      break;
+      default:
+        {} break;
      }
   }
 
@@ -415,39 +552,32 @@ void WriteToBuffer(CJAVal &message, double &buffer[])
   {
 
    int bufferSize = ArraySize(buffer);
-
-   for(int i=0; i<bufferSize; i++)
-     {
-      buffer[i] = EMPTY_VALUE;
-     }
-
    int messageDataSize = message["data"].Size();
-// TODO check if this is working as expected. Seems to
-   if(first==false)
-     {
-      for(int i=0; i<activeBufferCount; i++)
-        {
-         //Print("BUFF ",bufferSize-messageDataSize, " ",ArraySize(B2)," ", ArraySize(B3), " ",messageDataSize);
-         PlotIndexSetInteger(i,PLOT_DRAW_BEGIN,bufferSize-messageDataSize);
-        }
-      first = true;
-     }
 
+// calculate the buffer offset
+   MqlRates r[];
+   mtChartId =(datetime)message["mtChartId"].ToInt();
+   datetime fromDate=(datetime)message["fromDate"].ToInt();
+   datetime toDate=TimeCurrent();
+   ENUM_TIMEFRAMES period = ChartPeriod(mtChartId);
+   string symbol = ChartSymbol(mtChartId);
+   int rateCount;
+
+   rateCount = CopyRates(symbol, period, fromDate, toDate, r);
+   int offset = rateCount - 1;
+
+// write to buffer
    for(int i=0; i<messageDataSize; i++)
      {
-      // don't add more elements than the automatically sized buffer array can hold
-      if(i+1<bufferSize)
+      // don't add more elements than the automatically sized buffer array can
+      if(i+offset<bufferSize)
         {
-         // the first element is the current unformed candle, so we start at index 1
-         // we reverse the order of the incoming values, which are expected to be ascending
-         //buffer[i+1] = message["data"][messageDataSize-1-i].ToDbl();
-         buffer[i+1] = message["data"][messageDataSize-1-i].ToDbl();
+         double val = message["data"][i].ToDbl();
+         if(val >= EMPTY_VALUE)
+            val = EMPTY_VALUE;
+         buffer[i+offset] = val;
         }
-      //if(i == messageDataSize-1)
-      //   buffer[i+1] = EMPTY_VALUE;
      }
-// Set the most recent plotted value to nothing, as we do not have any data for yet unformed candles
-   buffer[0] = EMPTY_VALUE;
   }
 
 
