@@ -915,6 +915,32 @@ bool PushHistoricalData(CJAVal &data)
   }
 
 //+------------------------------------------------------------------+
+//| Correct historical tick data                                     |
+//+------------------------------------------------------------------+
+// Some brokers (markets.com) deliver incorrect historical tick data
+// with an incorrect spread. 
+// This attempts to automatically adjust the
+// historical tick data.
+// Live bar data is also represented with the same, incorrect spread so we attempt
+// to adjust historical tick data by that same amount.
+void CorrectTicks(string symbol, MqlTick &copyTicksArray[])
+  {
+   MqlTick symbolInfoTick;
+   double offsetBid, offsetAsk;
+   int tickCount = ArraySize(copyTicksArray);
+   SymbolInfoTick(symbol,symbolInfoTick);
+
+   offsetBid = copyTicksArray[tickCount-1].bid - symbolInfoTick.bid;
+   offsetAsk = copyTicksArray[tickCount-1].ask - symbolInfoTick.ask;
+
+   for(int i=0; i<tickCount; i++)
+     {
+      copyTicksArray[i].bid = copyTicksArray[i].bid - offsetBid;
+      copyTicksArray[i].ask = copyTicksArray[i].ask - offsetAsk;
+     }
+  }
+
+//+------------------------------------------------------------------+
 //| Get historical data                                              |
 //+------------------------------------------------------------------+
 void HistoryInfo(CJAVal &dataObject)
@@ -923,6 +949,7 @@ void HistoryInfo(CJAVal &dataObject)
    string actionType = dataObject["actionType"].ToStr();
    string chartTF = dataObject["chartTF"].ToStr();
    string symbol=dataObject["symbol"].ToStr();
+   bool correctTickHistory=dataObject["correctTickHistory"].ToBool();
 
 // Write CVS fle to local directory
    if(actionType=="WRITE" && chartTF=="TICK")
@@ -959,6 +986,8 @@ void HistoryInfo(CJAVal &dataObject)
       CheckError(__FUNCTION__);
 
       Print("Preparing data of ", tickCount, " ticks for ", symbol);
+      if(correctTickHistory)
+         CorrectTicks(symbol,tickArray);
       int file_handle=FileOpen(outputFile, FILE_WRITE | FILE_CSV);
       if(file_handle!=INVALID_HANDLE)
         {
@@ -1084,6 +1113,8 @@ void HistoryInfo(CJAVal &dataObject)
 
             tickCount=CopyTicksRange(symbol,tickArray, COPY_TICKS_ALL, 1000*(ulong)fromDateM, 1000*(ulong)toDateM);
             Print("Preparing tick data of ", tickCount, " ticks for ", symbol);
+            if(correctTickHistory)
+               CorrectTicks(symbol,tickArray);
             if(tickCount)
               {
                for(int i=0; i<tickCount; i++)
