@@ -40,8 +40,6 @@ bool                    debug = true;
 bool                    first = false;
 int                     activeBufferCount = 0;
 
-int activeBufferCount = 0;
-
 //+------------------------------------------------------------------+
 //| Custom indicator initialization function                         |
 //+------------------------------------------------------------------+
