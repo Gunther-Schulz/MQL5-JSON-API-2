@@ -113,6 +113,23 @@ ControlErrors mControl;
 //+------------------------------------------------------------------+
 bool BindSockets()
   {
+   sysSocket.setLinger(1000);
+   dataSocket.setLinger(1000);
+   liveSocket.setLinger(1000);
+   streamSocket.setLinger(1000);
+   indicatorDataSocket.setLinger(1000);
+   chartDataSocket.setLinger(1000);
+   chartIndicatorDataSocket.setLinger(1000);
+
+// Number of messages to buffer in RAM.
+   sysSocket.setSendHighWaterMark(1000);
+   dataSocket.setSendHighWaterMark(1000);
+   liveSocket.setSendHighWaterMark(1000);
+   streamSocket.setSendHighWaterMark(1000);
+   indicatorDataSocket.setSendHighWaterMark(1000);
+   chartDataSocket.setReceiveHighWaterMark(1000); // TODO confirm settings
+   chartIndicatorDataSocket.setReceiveHighWaterMark(1000);
+   
    bool result = false;
    result = sysSocket.bind(StringFormat("tcp://%s:%d", HOST,SYS_PORT));
    if(result == false)
@@ -177,23 +194,6 @@ bool BindSockets()
      {
       Print("Bound 'JsonAPIIndicator Data' socket on port ", CHART_INDICATOR_DATA_PORT);
      }
-
-   sysSocket.setLinger(1000);
-   dataSocket.setLinger(1000);
-   liveSocket.setLinger(1000);
-   streamSocket.setLinger(1000);
-   indicatorDataSocket.setLinger(1000);
-   chartDataSocket.setLinger(1000);
-   chartIndicatorDataSocket.setLinger(1000);
-
-// Number of messages to buffer in RAM.
-   sysSocket.setSendHighWaterMark(1);
-   dataSocket.setSendHighWaterMark(5);
-   liveSocket.setSendHighWaterMark(1);
-   streamSocket.setSendHighWaterMark(50);
-   indicatorDataSocket.setSendHighWaterMark(5);
-   chartDataSocket.setReceiveHighWaterMark(1); // TODO confirm settings
-   chartIndicatorDataSocket.setReceiveHighWaterMark(1);
 
    return result;
   }

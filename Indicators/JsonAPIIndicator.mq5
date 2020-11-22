@@ -46,7 +46,12 @@ int                     activeBufferCount = 0;
 int OnInit()
 
   {
-
+// TODO subscribe only to own IndicatorId topic
+// Subscribe to all topics
+   chartSubscriptionSocket.setSubscribe("");
+   chartSubscriptionSocket.setLinger(1000);
+// Number of messages to buffer in RAM.
+   chartSubscriptionSocket.setReceiveHighWaterMark(1000); // TODO confirm settings
    bool result = chartSubscriptionSocket.connect(StringFormat("tcp://%s:%d", HOST, CHART_SUB_PORT));
    if(result == false)
      {
@@ -55,13 +60,6 @@ int OnInit()
    else
      {
       Print("Accepting Chart Indicator data on port ", CHART_SUB_PORT);
-      // TODO subscribe only to own IndicatorId topic
-      // Subscribe to all topics
-      chartSubscriptionSocket.setSubscribe("");
-      //chartSubscriptionSocket.setLinger(1000);
-      chartSubscriptionSocket.setLinger(10000);
-      // Number of messages to buffer in RAM.
-      chartSubscriptionSocket.setReceiveHighWaterMark(5); // TODO confirm settings
      }
 
 
