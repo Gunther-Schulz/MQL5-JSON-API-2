@@ -1099,7 +1099,6 @@ void HistoryInfo(CJAVal &dataObject)
                   data[i][0]=(long)   tickArray[i].time_msc;
                   data[i][1]=(double) tickArray[i].bid;
                   data[i][2]=(double) tickArray[i].ask;
-                  i++;
                  }
                d["data"].Set(data);
               }
