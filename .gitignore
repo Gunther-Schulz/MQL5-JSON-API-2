@@ -1,2 +1,10 @@
 
 .DS_Store
+
+*.mq5:CursorPos:$DATA
+
+*.mq5:LineFlags:$DATA
+
+*.mqh:CursorPos:$DATA
+
+*.mqh:LineFlags:$DATA

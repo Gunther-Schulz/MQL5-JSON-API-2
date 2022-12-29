@@ -1,3 +1,7 @@
+### Marth 6th
+- fixed tick data retrival. When requesting tick data, every other tick was skipped
+- refactored code
+
 ### 30th April 2020
 
 - add support for spreads
