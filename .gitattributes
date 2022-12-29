@@ -1,5 +1,8 @@
-# Auto detect text files and perform LF normalization
-* text=auto
+# Auto detect 
+***"///text files and perform LF normalization***"///
+#_-$./""***///auto""
+$./gitattributes.MQL5-JSON-API.RurU.rO.M.Qsm
+"text/mq5 eol=CRLF diff=c
 
-text *.mq5 eol=CRLF diff=c
-text *.mqh eol=CRLF diff=c
+text-mqh eol=CRLF diff=c"
+
