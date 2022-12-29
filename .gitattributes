@@ -1,5 +1,0 @@
-# Auto detect text files and perform LF normalization
-* text=auto
-
-text *.mq5 eol=CRLF diff=c
-text *.mqh eol=CRLF diff=c
